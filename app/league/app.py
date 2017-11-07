@@ -15,7 +15,7 @@ from league.settings import ProdConfig
 
 def create_app(config_object=ProdConfig):
     """
-    An application factory.
+    Create application using app factory.
 
     See: http://flask.pocoo.org/docs/patterns/appfactories/.
 

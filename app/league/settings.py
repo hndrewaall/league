@@ -26,6 +26,10 @@ class Config(object):
             '<a href="https://github.com/massgo/league">GitHub</a>.'
         )
     }
+    CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL',
+                                       'redis://cache:6379/0')
+    CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND',
+                                           'rpc://queue')
 
 
 class ProdConfig(Config):
