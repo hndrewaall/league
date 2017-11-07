@@ -40,3 +40,6 @@ Flask-DebugToolbar==0.10.1
 
 # Requests
 requests==2.18.4
+
+# Queue
+celery==4.1.0
