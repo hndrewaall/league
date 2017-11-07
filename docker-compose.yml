@@ -14,6 +14,7 @@ services:
       - SERVER_NAME
     depends_on:
       - db
+      - queue
 
   webserver:
     build: ./webserver
@@ -36,6 +37,11 @@ services:
       - '5432:5432'
     volumes:
       - db_data:/var/lib/league/db
+
+  queue:
+    build: ./queue
+    ports:
+      - '5672:5672'
 
 volumes:
     uwsgi:
