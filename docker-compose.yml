@@ -39,9 +39,28 @@ services:
       - db_data:/var/lib/league/db
 
   queue:
-    build: ./queue
+    image: rabbitmq:3.6.12
+
+  cache:
+    image: redis:3.2.11-alpine
+
+  worker:
+    build: ./app
+    command: celery -A autoapp.celery worker
+    depends_on:
+      - db
+      - queue
+      - cache
+
+  queue_monitor:
+    environment:
+      - CELERY_BROKER_URL
+    image: mher/flower
+    depends_on:
+      - queue
+      - cache
     ports:
-      - '5672:5672'
+      - '5555:5555'
 
 volumes:
     uwsgi:
