@@ -46,7 +46,7 @@ services:
 
   worker_1:
     build: ./app
-    command: celery -A autoapp.celery worker
+    command: celery -A league.autoapp.celery worker
     depends_on:
       - db
       - queue
@@ -54,7 +54,7 @@ services:
 
   worker_2:
     build: ./app
-    command: celery -A autoapp.celery worker
+    command: celery -A league.autoapp.celery worker
     depends_on:
       - db
       - queue
