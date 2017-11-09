@@ -7,8 +7,9 @@ from flask import Flask, render_template, request
 
 from league import admin, api, commands, dashboard, public
 from league.assets import assets
-from league.extensions import (bcrypt, cache, csrf_protect, db, debug_toolbar,
-                               login_manager, messenger, migrate)
+from league.extensions import (bcrypt, cache, celery, csrf_protect, db,
+                               debug_toolbar, login_manager, messenger,
+                               migrate)
 from league.public.forms import LoginForm
 from league.settings import ProdConfig
 
@@ -38,6 +39,7 @@ def register_extensions(app):
     bcrypt.init_app(app)
     cache.init_app(app)
     db.init_app(app)
+    celery.init_app(app)
     csrf_protect.init_app(app)
     login_manager.init_app(app)
     debug_toolbar.init_app(app)

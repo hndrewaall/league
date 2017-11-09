@@ -8,6 +8,7 @@ from flask_login import login_required
 from league.api.forms import GameCreateForm, GameUpdateForm
 from league.extensions import csrf_protect, messenger
 from league.models import Color, Game, Player
+from league import tasks
 
 blueprint = Blueprint('api', __name__, url_prefix='/api/v1.0',
                       static_folder='../static')
@@ -137,3 +138,11 @@ def delete_game(game_id):
         return '', 204
     else:
         return '', 404
+
+
+@blueprint.route('/helloworld')
+def hello_world():
+    """Hello world task."""
+    result = tasks.hello_world.delay()
+
+    return result.wait()
