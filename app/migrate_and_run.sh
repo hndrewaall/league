@@ -1,6 +1,6 @@
 #! /bin/sh
 
-export FLASK_APP=league/autoapp.py
+export FLASK_APP=autoapp.py
 
 while true
 do
@@ -8,4 +8,4 @@ do
     sleep 1
 done
 
-uwsgi --chmod-socket=666 -s /tmp/uwsgi/uwsgi.sock --plugin python3 --manage-script-name --mount /=league.autoapp:flaskapp
+uwsgi --chmod-socket=666 -s /tmp/uwsgi/uwsgi.sock --plugin python3 --manage-script-name --mount /=autoapp:flaskapp
