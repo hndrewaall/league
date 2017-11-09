@@ -1,6 +1,6 @@
 #! /bin/sh
 
-export FLASK_APP=autoapp.py
+export FLASK_APP=league/autoapp.py
 
 while true
 do
