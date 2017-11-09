@@ -21,7 +21,8 @@ def _set_game_create_choices(game_create_form):
     Should allow up to one more than current maxima.
     """
     max_season, max_episode = Game.get_max_season_ep()
-    game_create_form.season.choices = [(s, s) for s in range(1, max_season + 2)]
+    game_create_form.season.choices = [(s, s) for s in
+                                       range(1, max_season + 2)]
     game_create_form.episode.choices = [(e, e) for e in
                                         range(1, max_episode + 2)]
 
@@ -87,10 +88,12 @@ def _slack_game_msg(game):
 
     return result.format(w_name=game.white.full_name,
                          w_url=url_for('dashboard.get_player',
-                                       player_id=game.white.id, _external=True),
+                                       player_id=game.white.id,
+                                       _external=True),
                          b_name=game.black.full_name,
                          b_url=url_for('dashboard.get_player',
-                                       player_id=game.black.id, _external=True),
+                                       player_id=game.black.id,
+                                       _external=True),
                          handicap=game.handicap,
                          komi=game.komi,
                          date_string=game.played_at,
