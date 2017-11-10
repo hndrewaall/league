@@ -5,10 +5,10 @@ from datetime import timezone
 from flask import Blueprint, jsonify, request, url_for
 from flask_login import login_required
 
+from league import tasks
 from league.api.forms import GameCreateForm, GameUpdateForm
 from league.extensions import csrf_protect, messenger
 from league.models import Color, Game, Player
-from league import tasks
 
 blueprint = Blueprint('api', __name__, url_prefix='/api/v1.0',
                       static_folder='../static')
@@ -143,9 +143,18 @@ def delete_game(game_id):
         return '', 404
 
 
-@blueprint.route('/helloworld')
+@blueprint.route('/hello-world')
 def hello_world():
-    """Hello world task."""
+    """Run and wait for Hello world task."""
     result = tasks.hello_world.delay()
 
-    return result.wait()
+    return result.wait(), 200
+
+
+@blueprint.route('/queue-aga-sync')
+@login_required
+def queue_aga_sync():
+    """Queue AGA sync job."""
+    tasks.sync_aga_data.delay()
+
+    return '', 200
