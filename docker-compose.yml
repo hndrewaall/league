@@ -51,6 +51,14 @@ services:
       - db
       - queue
       - cache
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - LEAGUE_ROOT_PASS
+      - SLACK_CHANNEL
+      - SLACK_WEBHOOK
+      - SERVER_NAME
 
   worker_2:
     build: ./app
@@ -59,6 +67,14 @@ services:
       - db
       - queue
       - cache
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - LEAGUE_ROOT_PASS
+      - SLACK_CHANNEL
+      - SLACK_WEBHOOK
+      - SERVER_NAME
 
   queue_monitor:
     environment:
