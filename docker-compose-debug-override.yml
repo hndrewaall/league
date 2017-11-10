@@ -1,0 +1,44 @@
+version: '2'
+services:
+  app:
+    volumes:
+        - uwsgi:/tmp/uwsgi
+        - ./app:/app
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - LEAGUE_ROOT_PASS
+      - SLACK_CHANNEL
+      - SLACK_WEBHOOK
+      - SERVER_NAME
+      - FLASK_DEBUG=1
+    command: ./migrate_and_run_dev.sh
+
+  worker_1:
+    volumes:
+        - ./app:/app
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - LEAGUE_ROOT_PASS
+      - SLACK_CHANNEL
+      - SLACK_WEBHOOK
+      - SERVER_NAME
+      - FLASK_DEBUG=1
+    command: watchmedo auto-restart -d . -R -p '*.py' -- celery -A autoapp worker
+
+  worker_2:
+    volumes:
+        - ./app:/app
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - LEAGUE_ROOT_PASS
+      - SLACK_CHANNEL
+      - SLACK_WEBHOOK
+      - SERVER_NAME
+      - FLASK_DEBUG=1
+    command: watchmedo auto-restart -d . -R -p '*.py' -- celery -A autoapp worker

@@ -50,3 +50,6 @@ redis==2.10.6
 
 # BeautifulSoup
 beautifulsoup4==4.6.0
+
+# Autoreloading (technically for dev, but no good way to include in dockerfile)
+watchdog==0.8.3
