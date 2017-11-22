@@ -5,8 +5,6 @@ Celery beat/SQLAlchemy integration.
 See https://github.com/tuomur/celery_sqlalchemy_scheduler/
 """
 
-from __future__ import absolute_import
-
 import datetime
 import time
 
