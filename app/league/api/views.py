@@ -2,6 +2,7 @@
 """API."""
 from datetime import timezone
 
+from celery import current_app as celery
 from flask import Blueprint, jsonify, request, url_for
 from flask_login import login_required
 
@@ -152,9 +153,18 @@ def hello_world():
 
 
 @blueprint.route('/queue-aga-sync')
-@login_required
+# @login_required
 def queue_aga_sync():
     """Queue AGA sync job."""
     tasks.sync_aga_data.delay()
 
     return '', 200
+
+
+@blueprint.route('/set-aga-sync-schedule')
+# @login_required
+def set_aga_sync_schedule():
+    """Set AGA sync job beat_schedule."""
+    celery.add_periodic_task(10.0, tasks.hello_world.s(), name='hello every 10')
+
+    return 'Schedule set!', 200

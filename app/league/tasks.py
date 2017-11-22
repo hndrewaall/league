@@ -3,22 +3,27 @@
 import math
 
 from bs4 import BeautifulSoup
-from celery import current_app
+from celery import current_app as app
+from celery.utils.log import get_task_logger
 from requests import get
 
 from league.models import Player
 
+logger = get_task_logger(__name__)
 
-@current_app.task
+
+@app.task
 def hello_world():
     """Hello world task."""
+    logger.info('Hello world!')
     return 'Hello world!'
 
 
-@current_app.task
+@app.task
 def sync_aga_data():
     """Update all local AGA data by scraping the AGA servers."""
     for player in Player.get_players():
+        logger.info('Syncing AGA info for player {}'.format(player.aga_id))
         url = 'http://www.usgo.org/ratings-lookup-id?PlayerID={}'.format(
             player.aga_id)
         data = get(url)
@@ -32,4 +37,4 @@ def sync_aga_data():
                 rank = math.ceil(rating)
             player.update(aga_rank=rank)
 
-    return
+    return 'AGA data synced!'
