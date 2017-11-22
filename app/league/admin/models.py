@@ -14,7 +14,7 @@ class SiteSettings(SurrogatePK, Model):
 
     __tablename__ = 'site_settings'
     key = Column(db.String(80), unique=True, nullable=False)
-    value = Column(db.String(80), nullable=False)
+    value = Column(db.String(1000), nullable=False)
 
     def __init__(self, key, value, **kwargs):
         """Create instance."""

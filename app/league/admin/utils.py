@@ -50,10 +50,10 @@ def load_site_config(app):
     app.config.update(SITE_SETTINGS=config)
 
 
-def update_site_settings(app, **kwargs):
+def update_site_settings(app, new_settings):
     """Update site settings."""
     config = app.config['SITE_SETTINGS']
-    for key, value in kwargs.items():
+    for key, value in new_settings.items():
         if type(value) == bool:
             value = 'True' if value else 'False'
         config_item = SiteSettings.get_by_key(
@@ -65,5 +65,4 @@ def update_site_settings(app, **kwargs):
             config_item = SiteSettings(
                 key='site_settings_{}'.format(key), value=value)
             config_item.save()
-    config.update(**kwargs)
     app.config.update(SITE_SETTINGS=config)

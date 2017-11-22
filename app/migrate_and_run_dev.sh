@@ -4,7 +4,7 @@ export FLASK_APP=autoapp.py
 
 while true
 do
-    flask db upgrade && break
+    flask db upgrade && flask db migrate && flask db upgrade && break
     sleep 1
 done
 

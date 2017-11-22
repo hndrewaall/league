@@ -91,12 +91,12 @@ def manage_site_settings():
     form = SiteSettingsForm()
     site_settings = current_app.config['SITE_SETTINGS']
     if form.validate_on_submit():
-        update_site_settings(
-            app=current_app,
-            dashboard_title=form.dashboard_title.data,
-            this_episode_phrase=form.this_episode_phrase.data,
-            about_page_text=form.about_page_text.data
-        )
+        # grab all fields except CSRF token and button
+        form_data = form.data
+        del form_data['csrf_token']
+        del form_data['update']
+
+        update_site_settings(current_app, form_data)
         flash('Site settings updated!', 'success')
     else:
         flash_errors(form)

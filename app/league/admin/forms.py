@@ -4,8 +4,8 @@ from collections import OrderedDict
 
 from flask_login import current_user
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, StringField, SubmitField
-from wtforms.validators import URL, DataRequired, Email, Length
+from wtforms import BooleanField, IntegerField, StringField, SubmitField
+from wtforms.validators import URL, DataRequired, Email, Length, NumberRange
 
 from league.forms import CheckboxTableField
 
@@ -117,10 +117,13 @@ class SiteSettingsForm(FlaskForm):
                                               Length(min=1, max=40)])
     this_episode_phrase = StringField('This episode phrase',
                                       validators=[DataRequired(),
-                                                  Length(min=1, max=10)])
+                                                  Length(min=1, max=1000)])
     about_page_text = StringField('About Page text',
                                   validators=[DataRequired(),
                                               Length(min=1, max=1000)])
+
+    aga_sync_interval = IntegerField('AGA Sync Interval',
+                                     validators=[NumberRange(1, 3000000)])
 
     update = SubmitField('Update Site Settings')
 

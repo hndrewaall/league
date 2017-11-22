@@ -21,6 +21,7 @@ class Config(object):
         'dashboard_title': 'Dashboard',
         'this_episode_phrase': 'in Current Episode',
         'contact_email': 'hndrewaall@gmail.com',
+        'aga_sync_interval': 86400,
         'about_page_text': (
             'An app for managing Go leagues. Learn more and contribute on '
             '<a href="https://github.com/massgo/league">GitHub</a>.'
