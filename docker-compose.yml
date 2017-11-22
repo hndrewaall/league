@@ -44,9 +44,9 @@ services:
   cache:
     image: redis:3.2.11-alpine
 
-  worker_1:
+  beat_worker:
     build: ./app
-    command: celery -A autoapp worker
+    command: celery -A autoapp worker --loglevel=INFO -B -s /var/run/celery-beat
     depends_on:
       - db
       - queue
@@ -60,9 +60,9 @@ services:
       - SLACK_WEBHOOK
       - SERVER_NAME
 
-  worker_2:
+  worker:
     build: ./app
-    command: celery -A autoapp worker
+    command: celery -A autoapp worker --loglevel=INFO
     depends_on:
       - db
       - queue
