@@ -6,17 +6,16 @@ See https://github.com/tuomur/celery_sqlalchemy_scheduler/
 """
 
 from __future__ import absolute_import
+
 import datetime
 import time
 
+from celery import current_app, schedules
+from celery.beat import ScheduleEntry, Scheduler
+from celery.utils.timeutils import is_naive
 from sqlalchemy.orm import sessionmaker
 
-from celery.beat import Scheduler, ScheduleEntry
-from celery import schedules, current_app
-from celery.utils.timeutils import is_naive
-
-from sqlalchemy_scheduler_models import DatabaseSchedulerEntry, CrontabSchedule, IntervalSchedule
-
+from .models import CrontabSchedule, DatabaseSchedulerEntry, IntervalSchedule
 
 # The schedule objects need to be handled within one scope
 Session = sessionmaker(autocommit=False, autoflush=False)
