@@ -11,7 +11,12 @@ from sqlalchemy.orm import backref, relationship
 from .extensions import db
 
 # Alias common SQLAlchemy names
+Boolean = db.Boolean
 Column = db.Column
+DateTime = db.DateTime
+ForeignKey = db.ForeignKey
+Integer = db.Integer
+String = db.String
 association_proxy = association_proxy
 backref = backref
 func = func
@@ -82,5 +87,5 @@ def reference_col(tablename, nullable=False, pk_name='id', **kwargs):
         category = relationship('Category', backref='categories')
     """
     return db.Column(
-        db.ForeignKey('{0}.{1}'.format(tablename, pk_name)),
+        ForeignKey('{0}.{1}'.format(tablename, pk_name)),
         nullable=nullable, **kwargs)

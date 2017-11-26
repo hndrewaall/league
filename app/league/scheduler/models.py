@@ -10,17 +10,28 @@ import json
 
 import sqlalchemy
 import sqlalchemy.event
-from celery import schedules
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+import sqlalchemy.orm
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 
-engine = sqlalchemy.create_engine('sqlite://')
-Base = declarative_base(bind=engine)
+from celery import schedules
 
 
-class CrontabSchedule(Base):
+from flask import current_app
+db = current_app().extensions['sqlalchemy']
+
+# db = SQLAlchemy()
+Model = db.Model
+relationship = db.relationship
+Boolean = db.Boolean
+Column = db.Column
+DateTime = db.DateTime
+ForeignKey = db.ForeignKey
+Integer = db.Integer
+String = db.String
+
+
+class CrontabSchedule(Model):
     __tablename__ = 'celery_crontabs'
 
     id = Column(Integer, primary_key=True)
@@ -39,28 +50,28 @@ class CrontabSchedule(Base):
                                  month_of_year=self.month_of_year)
 
     @classmethod
-    def from_schedule(cls, dbsession, schedule):
+    def from_schedule(cls, schedule):
         spec = {'minute': schedule._orig_minute,
                 'hour': schedule._orig_hour,
                 'day_of_week': schedule._orig_day_of_week,
                 'day_of_month': schedule._orig_day_of_month,
                 'month_of_year': schedule._orig_month_of_year}
         try:
-            query = dbsession.query(CrontabSchedule)
+            query = db.session.query(cls)
             query = query.filter_by(**spec)
             existing = query.one()
             return existing
         except NoResultFound:
             return cls(**spec)
         except MultipleResultsFound:
-            query = dbsession.query(CrontabSchedule)
+            query = db.session.query(cls)
             query = query.filter_by(**spec)
             query.delete()
-            dbsession.commit()
+            db.session.commit()
             return cls(**spec)
 
 
-class IntervalSchedule(Base):
+class IntervalSchedule(Model):
     __tablename__ = 'celery_intervals'
 
     id = Column(Integer, primary_key=True)
@@ -72,24 +83,24 @@ class IntervalSchedule(Base):
         return schedules.schedule(datetime.timedelta(**{self.period: self.every}))
 
     @classmethod
-    def from_schedule(cls, dbsession, schedule, period='seconds'):
+    def from_schedule(cls, schedule, period='seconds'):
         every = max(schedule.run_every.total_seconds(), 0)
         try:
-            query = dbsession.query(IntervalSchedule)
+            query = db.session.query(cls)
             query = query.filter_by(every=every, period=period)
             existing = query.one()
             return existing
         except NoResultFound:
             return cls(every=every, period=period)
         except MultipleResultsFound:
-            query = dbsession.query(IntervalSchedule)
+            query = db.session.query(cls)
             query = query.filter_by(every=every, period=period)
             query.delete()
-            dbsession.commit()
+            db.session.commit()
             return cls(every=every, period=period)
 
 
-class DatabaseSchedulerEntry(Base):
+class DatabaseSchedulerEntry(Model):
     __tablename__ = 'celery_schedules'
 
     id = Column(Integer, primary_key=True)

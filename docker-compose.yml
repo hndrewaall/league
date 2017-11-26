@@ -46,7 +46,7 @@ services:
 
   beat_worker:
     build: ./app
-    command: celery -A autoapp worker --loglevel=INFO -B -s /var/run/celery-beat
+    command: celery -A autoapp worker --loglevel=INFO -B --scheduler league.scheduler.DatabaseScheduler -s /var/run/celery-beat
     depends_on:
       - db
       - queue

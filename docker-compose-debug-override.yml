@@ -19,7 +19,7 @@ services:
     volumes:
       - ./app:/app
     build: ./app
-    command: watchmedo auto-restart -d . -R -p '*.py' -- celery -A autoapp --loglevel=DEBUG worker -E -B -s /var/run/celery-beat
+    command: watchmedo auto-restart -d . -R -p '*.py' -- celery -A autoapp --loglevel=DEBUG worker -E -B --scheduler Scheduler -s /var/run/celery-beat
     depends_on:
       - db
       - queue

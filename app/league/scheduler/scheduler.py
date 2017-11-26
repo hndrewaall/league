@@ -10,14 +10,9 @@ import time
 
 from celery import current_app, schedules
 from celery.beat import ScheduleEntry, Scheduler
-from celery.utils.timeutils import is_naive
-from sqlalchemy.orm import sessionmaker
+from flask import current_app as flask_app
 
 from .models import CrontabSchedule, DatabaseSchedulerEntry, IntervalSchedule
-
-# The schedule objects need to be handled within one scope
-Session = sessionmaker(autocommit=False, autoflush=False)
-dbsession = Session()
 
 
 class Entry(ScheduleEntry):
@@ -43,8 +38,7 @@ class Entry(ScheduleEntry):
         if not model.last_run_at:
             model.last_run_at = self._default_now()
         orig = self.last_run_at = model.last_run_at
-        if not is_naive(self.last_run_at):
-            self.last_run_at = self.last_run_at.replace(tzinfo=None)
+        self.last_run_at = self.last_run_at.replace(tzinfo=None)
         assert orig.hour == self.last_run_at.hour  # timezone sanity
 
     def is_due(self):
@@ -58,7 +52,7 @@ class Entry(ScheduleEntry):
     def __next__(self):
         self.model.last_run_at = self._default_now()
         self.model.total_run_count += 1
-        dbsession.commit()
+        self.db.session.commit()
         return self.__class__(self.model)
     next = __next__  # for 2to3
 
@@ -67,13 +61,13 @@ class Entry(ScheduleEntry):
         for schedule_type, model_type, model_field in cls.model_schedules:
             schedule = schedules.maybe_schedule(schedule)
             if isinstance(schedule, schedule_type):
-                model_schedule = model_type.from_schedule(dbsession, schedule)
+                model_schedule = model_type.from_schedule(schedule)
                 return model_schedule, model_field
         raise ValueError(
             'Cannot convert schedule type {0!r} to model'.format(schedule))
 
     @classmethod
-    def from_entry(cls, name, skip_fields=('relative', 'options'), **entry):
+    def from_entry(cls, db, name, skip_fields=('relative', 'options'), **entry):
         options = entry.get('options') or {}
         fields = dict(entry)
         for skip_field in skip_fields:
@@ -87,14 +81,14 @@ class Entry(ScheduleEntry):
         fields['exchange'] = options.get('exchange')
         fields['routing_key'] = options.get('routing_key')
 
-        query = dbsession.query(DatabaseSchedulerEntry)
+        query = db.session.query(DatabaseSchedulerEntry)
         query = query.filter_by(name=name)
         db_entry = query.first()
         if db_entry is None:
             new_entry = DatabaseSchedulerEntry(**fields)
             new_entry.name = name
-            dbsession.add(new_entry)
-            dbsession.commit()
+            db.session.add(new_entry)
+            db.session.commit()
             db_entry = new_entry
         return cls(db_entry)
 
@@ -106,22 +100,23 @@ class DatabaseScheduler(Scheduler):
     _initial_read = False
 
     def __init__(self, app, **kwargs):
-        self._last_timestamp = self._get_latest_change()
+        self.db = flask_app.extensions['sqlalchemy'].db
         Scheduler.__init__(self, app, **kwargs)
 
     def _get_latest_change(self):
-        query = dbsession.query(DatabaseSchedulerEntry.date_changed)
+        query = self.db.session.query(DatabaseSchedulerEntry.date_changed)
         query = query.order_by(DatabaseSchedulerEntry.date_changed.desc())
         latest_entry_date = query.first()
         return latest_entry_date
 
     def setup_schedule(self):
+        self._last_timestamp = self._get_latest_change()
         self.install_default_entries(self.schedule)
         self.update_from_dict(self.app.conf.CELERYBEAT_SCHEDULE)
 
     def _all_as_schedule(self):
         s = {}
-        query = dbsession.query(DatabaseSchedulerEntry)
+        query = self.db.session.query(DatabaseSchedulerEntry)
         query = query.filter_by(enabled=True)
         for row in query:
             s[row.name] = Entry(row)
@@ -137,7 +132,7 @@ class DatabaseScheduler(Scheduler):
         s = {}
         for name, entry in dict_.items():
             try:
-                s[name] = self.Entry.from_entry(name, **entry)
+                s[name] = self.Entry.from_entry(name, self.db, **entry)
             except Exception as exc:
                 self.logger.exception('update_from_dict')
         self.schedule.update(s)
@@ -165,7 +160,7 @@ class DatabaseScheduler(Scheduler):
     def schedule(self):
         update = False
         if not self._initial_read:
-            self.logger.debug('DatabaseScheduler: intial read')
+            self.logger.debug('DatabaseScheduler: initial read')
             update = True
             self._initial_read = True
         elif self.schedule_changed():
