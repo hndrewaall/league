@@ -63,6 +63,10 @@ class DevConfig(Config):
     ASSETS_DEBUG = True  # Don't bundle/minify static assets
     CACHE_TYPE = 'simple'  # Can be "memcached", "redis", etc.
     LEAGUE_ROOT_PASS = 'root'
+    CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL',
+                                       'redis://localhost:6379/0')
+    CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND',
+                                           'redis://localhost:6379/0')
 
 
 class TestConfig(Config):
