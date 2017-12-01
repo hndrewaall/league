@@ -31,16 +31,13 @@ function display_msgs(msgs, alert_type='warning') {
 $('#submit-button').click(function() {
     var jqxhr = $.post({
         url: '{{ url_for('api.queue_aga_sync') }}',
-        data: { csrf_token: csrfToken },
-        success: function(data, textStatus, jqXHR) {
-            display_msgs(jqXHR.responseJSON, 'success');
-        }
+        data: { csrf_token: csrfToken }
     })
-    .done(function(data, textStatus, jqXHR) {
-        display_msgs(jqXHR.responseJSON);
+    .done(function() {
+        display_msgs(['Job submitted!'], 'success');
     })
-    .fail(function(data, textStatus, jqXHR) {
-        display_msgs(jqXHR.responseJSON, 'danger');
+    .fail(function() {
+        display_msgs(['Job failed to submit!'], 'danger');
     })
     console.log(jqxhr);
 });
