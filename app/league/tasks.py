@@ -4,9 +4,12 @@ import math
 
 from bs4 import BeautifulSoup
 from celery import current_app
+from celery.utils.log import get_task_logger
 from requests import get
 
 from league.models import Player
+
+logger = get_task_logger(__name__)
 
 
 @current_app.task

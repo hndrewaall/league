@@ -157,4 +157,4 @@ def queue_aga_sync():
     """Queue AGA sync job."""
     tasks.sync_aga_data.delay()
 
-    return '', 200
+    return 'Task queued!', 200
