@@ -29,9 +29,20 @@ function display_msgs(msgs, alert_type='warning') {
 }
 
 $('#submit-button').click(function() {
-    display_msgs(['wee'], 'danger');
-    display_msgs(['woo'], 'success');
-    display_msgs(['waa']);
+    var jqxhr = $.post({
+        url: '{{ url_for('api.queue_aga_sync') }}',
+        data: { csrf_token: csrfToken },
+        success: function(data, textStatus, jqXHR) {
+            display_msgs(jqXHR.responseJSON, 'success');
+        }
+    })
+    .done(function(data, textStatus, jqXHR) {
+        display_msgs(jqXHR.responseJSON);
+    })
+    .fail(function(data, textStatus, jqXHR) {
+        display_msgs(jqXHR.responseJSON, 'danger');
+    })
+    console.log(jqxhr);
 });
 
 </script>

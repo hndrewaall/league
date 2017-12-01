@@ -151,7 +151,7 @@ def hello_world():
     return result.wait(), 200
 
 
-@blueprint.route('/queue-aga-sync')
+@blueprint.route('/queue-aga-sync', methods=['POST'])
 @login_required
 def queue_aga_sync():
     """Queue AGA sync job."""
