@@ -46,7 +46,7 @@ services:
 
   worker_1:
     build: ./app
-    command: celery -A autoapp worker
+    command: celery -A autoapp worker -l DEBUG
     depends_on:
       - db
       - queue
@@ -62,7 +62,7 @@ services:
 
   worker_2:
     build: ./app
-    command: celery -A autoapp worker
+    command: celery -A autoapp worker -l DEBUG
     depends_on:
       - db
       - queue
