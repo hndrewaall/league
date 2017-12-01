@@ -8,8 +8,7 @@ from flask import Flask, render_template, request
 from league import admin, api, commands, dashboard, public
 from league.assets import assets
 from league.extensions import (bcrypt, cache, celery, csrf_protect, db,
-                               debug_toolbar, login_manager, messenger,
-                               migrate)
+                               debug_toolbar, login_manager, messenger, migrate)
 from league.public.forms import LoginForm
 from league.settings import ProdConfig
 
