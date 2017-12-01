@@ -84,6 +84,13 @@ def settings():
     return render_template('admin/settings.html')
 
 
+@blueprint.route('/aga-syncing')
+@admin_required
+def aga_syncing():
+    """AGA syncing."""
+    return render_template('admin/aga_syncing.html')
+
+
 @blueprint.route('/site_settings/', methods=['GET', 'POST'])
 @admin_required
 def manage_site_settings():

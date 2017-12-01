@@ -2,13 +2,6 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<!-- See http://stackoverflow.com/questions/18673860/defining-a-html-template-to-append-using-jquery -->
-<script id="error-template" type="text/x-error-template">
-  <div class="alert alert-warning">
-    <a class="close" title="Close" href="#" data-dismiss="alert">&times;</a>
-  </div><!-- end .alert -->
-</script>
-
 <div class="modal fade" id="editor-modal" tabindex="-1" role="dialog" aria-labelledby="editor-title">
   <div class="modal-dialog" role="document">
     <form class="modal-content form-horizontal" id="editor">
@@ -130,18 +123,19 @@ function remotedate_to_local(remotedate) {
   return moment.utc(remotedate, server_dt_format).utcOffset(local_tz).format(local_dt_format);
 }
 
-$error_container = $('#error-container');
-$error_template = $('#error-template');
+$msg_container = $('#error-container');
+$msg_template = $('#msg-template');
 
-function display_errors(errors) {
-  $error_container.hide();
-  for (var attr in errors) {
-    $error_container.append($error_template.html());
-    alerts = $error_container.children('.alert');
-    $new_alert = alerts[alerts.length -1];
-    $new_alert.append(attr + ' - ' + errors[attr]);
+function display_msgs(msgs, alert_type='warning') {
+  $msg_container.hide();
+  for (var attr in msgs) {
+    $msg_container.append($msg_template.html());
+    $alerts = $msg_container.children('.alert');
+    $new_alert = $alerts.last();
+    $new_alert.addClass('alert-' + alert_type);
+    $new_alert.append(msgs[attr]);
   }
-  $error_container.show();
+  $msg_container.show();
 }
 
 function format_player(value) {
@@ -182,7 +176,7 @@ function create_game(values) {
       });
     },
     error: function(jqXHR, textStatus, errorThrown) {
-      display_errors(jqXHR.responseJSON);
+      display_msgs(jqXHR.responseJSON);
     }
   });
 }
@@ -219,7 +213,7 @@ function update_game(values) {
       });
     },
     error: function(jqXHR, textStatus, errorThrown) {
-      display_errors(jqXHR.responseJSON);
+      display_msgs(jqXHR.responseJSON);
     }
   });
 }
@@ -233,7 +227,7 @@ function delete_game(row) {
     },
     error: function(jqXHR, textStatus, errorThrown) {
       if (jqXHR.status == 404) {
-        display_errors({'game_id': 'Game ' + id + ' could not be found and was not deleted.'});
+        display_msgs({'game_id': 'Game ' + id + ' could not be found and was not deleted.'});
       }
     }
   });

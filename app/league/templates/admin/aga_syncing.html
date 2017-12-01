@@ -1,0 +1,38 @@
+
+{% extends "layout.html" %}
+{% block content %}
+<div class="container-narrow">
+  <h1>AGA Syncing</h1>
+  <br/>
+  <button id="submit-button" type="submit" class="btn btn-primary">Sync AGA Data</button>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+
+var csrfToken = '{{ csrf_token() }}';
+
+$msg_container = $('#error-container');
+$msg_template = $('#msg-template');
+
+function display_msgs(msgs, alert_type='warning') {
+  $msg_container.hide();
+  for (var attr in msgs) {
+    $msg_container.append($msg_template.html());
+    $alerts = $msg_container.children('.alert');
+    $new_alert = $alerts.last();
+    $new_alert.addClass('alert-' + alert_type);
+    $new_alert.append(msgs[attr]);
+  }
+  $msg_container.show();
+}
+
+$('#submit-button').click(function() {
+    display_msgs(['wee'], 'danger');
+    display_msgs(['woo'], 'success');
+    display_msgs(['waa']);
+});
+
+</script>
+{% endblock %}

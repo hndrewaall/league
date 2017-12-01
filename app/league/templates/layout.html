@@ -34,6 +34,13 @@
 {% endwith %}
 
 <header>{% block header %}{% endblock %}</header>
+<!-- See http://stackoverflow.com/questions/18673860/defining-a-html-template-to-append-using-jquery -->
+<script id="msg-template" type="text/x-error-template">
+  <div class="alert">
+    <a class="close" title="Close" href="#" data-dismiss="alert">&times;</a>
+  </div><!-- end .alert -->
+</script>
+
 <div class="{% block content_class %}container{% endblock content_class %}">
 
   <div role="main">
