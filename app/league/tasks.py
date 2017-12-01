@@ -27,12 +27,19 @@ def sync_aga_data():
         data = get(url)
         soup = BeautifulSoup(data.text, 'html.parser')
         columns = [col.text for col in soup.findAll('tr')[1].findAll('td')]
-        if int(columns[0]) == player.aga_id:
-            rating = float(columns[2])
-            if rating > 0:
-                rank = math.floor(rating)
-            else:
-                rank = math.ceil(rating)
-            player.update(aga_rank=rank)
+        logger.debug('AGA Data: {}'.format(columns))
+
+        if not int(columns[0]) == player.aga_id:
+            continue
+        if columns[2] == '':
+            continue
+
+        rating = float(columns[2])
+        if rating > 0:
+            rank = math.floor(rating)
+        else:
+            rank = math.ceil(rating)
+
+        player.update(aga_rank=rank)
 
     return
